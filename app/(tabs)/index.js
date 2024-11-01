@@ -1,15 +1,16 @@
-import { Image, StyleSheet, Platform, FlatList, View } from 'react-native';
-import { useState, useEffect } from 'react';
+import { Image, StyleSheet, Platform, FlatList, View, TextInput } from 'react-native';
+import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import {Plato, Popup} from '@/components/Plato';
-import { ScrollView } from 'react-native-gesture-handler';
+import { MenuContext } from '@/contexts/MenuContext';
 
 export default function HomeScreen() {
 
-  const apikey = "ff61cf01f89f4dd287187194e40b99d9"
+  const apikey = "e1b5e0ea5723487da4f7b97c6f03f3ac"
   const [platos, setPlatos] = useState([]);
   const [mostrarPlato, setMostrarPlato] = useState(null)
   const [mostrarPopup, setMostrarPopup] = useState(false)
+  const [busqueda, setBusqueda] = useState("")
 
 
   const handleDelete = (id) => {
@@ -30,11 +31,27 @@ export default function HomeScreen() {
   const getData = async () => {
         try {
           const response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apikey}`)
-          setPlatos(response.data.results);
-          console.log(response.data.results);
+          setPlatos(response.data.results)
         } catch (err) {
           console.log(err);
         }
+  }
+
+  const handleInput = async (e) => {
+    console.log(e);
+    setBusqueda(e);
+
+    if (busqueda.length > 1) {
+      try {
+        const response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apikey}&query=${busqueda}`);
+        setPlatos(response.data.results);
+        
+      } catch (error) {
+        console.log(error);
+      }
+    }else {
+      getData();
+    }
   }
 
   useEffect(() => {
@@ -43,6 +60,14 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+
+      <TextInput
+        placeholder="Buscar platos..."
+        value={busqueda}
+        onChangeText={handleInput}
+        style={styles.input}
+      />
+
     <FlatList
       data={platos}
       keyExtractor={(item) => item.id.toString()}
@@ -66,20 +91,12 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    marginTop: 100
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  input: {
+    borderWidth: 2,
+    borderColor: "#c2c2c2",
+    width: 600
+  }
 });

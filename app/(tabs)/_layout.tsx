@@ -4,11 +4,14 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import {MenuProvider} from "@/contexts/MenuContext.js"
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+
   return (
+    <MenuProvider>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -24,14 +27,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="menu"
         options={{
-          title: 'Explore',
+          title: 'Menu',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
           ),
         }}
       />
     </Tabs>
+    </MenuProvider>
   );
 }

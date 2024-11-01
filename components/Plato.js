@@ -1,7 +1,16 @@
 import { Image, StyleSheet, View, Button, Text, Modal } from 'react-native';
-
+import { MenuContext } from '@/contexts/MenuContext';
+import { useContext } from 'react';
 
 export function Plato({plato, onDelete, mostrarPopup}){
+
+    const { agregarAlMenu } = useContext(MenuContext)
+
+    const agregar = (plato) => {
+        agregarAlMenu(plato)
+        onDelete(plato.id)
+    }
+
     return (
     <View style={styles.container}>
       <Text style={styles.title}>{plato.title}</Text>
@@ -11,7 +20,7 @@ export function Plato({plato, onDelete, mostrarPopup}){
       />
       <View style={styles.buttonsContainer}>
         <Button title="Ver Detalle"  onPress={() => mostrarPopup(plato)}/>
-        <Button title="Eliminar" onPress={() => onDelete(plato.id)} color="red" />
+        <Button title="Agregar al menu"  onPress={() => agregar(plato)} color="green"/>
       </View>
     </View>
     )
