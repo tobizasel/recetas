@@ -6,7 +6,7 @@ import { MenuContext } from '@/contexts/MenuContext';
 
 export default function HomeScreen() {
 
-  const apikey = "e1b5e0ea5723487da4f7b97c6f03f3ac"
+  const apikey = "14a1dd4ac511492c96e50f1df6d6dc7e"
   const [platos, setPlatos] = useState([]);
   const [mostrarPlato, setMostrarPlato] = useState(null)
   const [mostrarPopup, setMostrarPopup] = useState(false)
@@ -14,8 +14,7 @@ export default function HomeScreen() {
 
 
   const handleDelete = (id) => {
-    console.log("eliminar", id);
-      setPlatos((platos) => platos.filter(plato => plato.id !== id));
+    setPlatos((platos) => platos.filter(plato => plato.id !== id));
   }
 
   const handleMostrarPopup = (plato) => {
@@ -45,7 +44,6 @@ export default function HomeScreen() {
       try {
         const response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apikey}&query=${busqueda}`);
         setPlatos(response.data.results);
-        
       } catch (error) {
         console.log(error);
       }

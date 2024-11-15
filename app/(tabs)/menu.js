@@ -21,20 +21,29 @@ export default function TabTwoScreen() {
     setMostrarPopup(false);
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.platoContainer}>
-      <Text style={styles.title}>{item.title}</Text>
-      <Button title="Ver Detalle" onPress={() => handleMostrarPopup(item)} />
-      <Button title="Eliminar" onPress={() => eliminarDelMenu(item.id)} color="red" />
+  const renderItem = ({ item }) => {
+
+    const imageUrl = item.plato.image
+    console.log(imageUrl)
+    
+
+  return (
+    <View style={[styles.platoContainer, item.ingredientes.vegan && styles.vegan]}>
+      <Text style={styles.title}>{item.plato.title}</Text>
+      <Image
+        source={{ uri: imageUrl }}
+      />
+      <Button title="Ver Detalle" onPress={() => handleMostrarPopup(item, imageUrl)} />
+      <Button title="Eliminar" onPress={() => eliminarDelMenu(item.plato.id, item.ingredientes.vegan)} color="red" />
     </View>
-  );
+  )};
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Menú</Text>
       <FlatList
         data={menu}
-        keyExtractor={(item) => item.id.toString()}
+        key={(item) => item.id}
         renderItem={renderItem}
       />
       {mostrarPlato && (
@@ -52,6 +61,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+
+  vegan: {
+    borderColor: "f00",
+    borderWidth:2,
+    borderRadius: 10,
+    backgroundColor: "f00"
   },
   header: {
     fontSize: 24,

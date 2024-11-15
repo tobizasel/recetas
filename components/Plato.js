@@ -4,10 +4,11 @@ import { useContext } from 'react';
 
 export function Plato({plato, onDelete, mostrarPopup}){
 
-    const { agregarAlMenu } = useContext(MenuContext)
+    const { agregarAlMenu, menu } = useContext(MenuContext)
 
     const agregar = (plato) => {
         agregarAlMenu(plato)
+
         onDelete(plato.id)
     }
 
