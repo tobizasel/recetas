@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Image, Platform, View, Text, FlatList, Button } from 'react-native';
 import { useContext } from 'react';
@@ -8,32 +8,35 @@ import { Popup } from '@/components/Plato';
 export default function TabTwoScreen() {
 
   const { menu, eliminarDelMenu } = useContext(MenuContext);
-  const [mostrarPlato, setMostrarPlato] = React.useState(null);
-  const [mostrarPopup, setMostrarPopup] = React.useState(false);
+  const [precioTotal, setPrecioTotal] = useState(0)
+  const [promedioHealth, setPromedioHealth] = useState(0)
 
-  const handleMostrarPopup = (plato) => {
-    setMostrarPlato(plato);
-    setMostrarPopup(true);
-  };
 
-  const handleCerrarPopup = () => {
-    setMostrarPlato(null);
-    setMostrarPopup(false);
-  };
+
+  useEffect(() => {
+    setPrecioTotal(0)
+    setPromedioHealth(0)
+    menu.forEach(platoMenu => {
+      console.log(platoMenu.ingredientes.pricePerServing);
+      setPrecioTotal(precioTotal => precioTotal + platoMenu.ingredientes.pricePerServing)
+      setPromedioHealth(promedioHealth => promedioHealth + platoMenu.ingredientes.healthScore)
+    });
+    setPromedioHealth(promedioHealth => promedioHealth / menu.length)
+
+    if (menu.length === 0) {
+      setPromedioHealth(0)
+    }
+  }, [menu])
+
 
   const renderItem = ({ item }) => {
-
-    const imageUrl = item.plato.image
-    console.log(imageUrl)
     
-
   return (
     <View style={[styles.platoContainer, item.ingredientes.vegan && styles.vegan]}>
       <Text style={styles.title}>{item.plato.title}</Text>
       <Image
-        source={{ uri: imageUrl }}
+        source={{ uri: item.plato.image }}
       />
-      <Button title="Ver Detalle" onPress={() => handleMostrarPopup(item, imageUrl)} />
       <Button title="Eliminar" onPress={() => eliminarDelMenu(item.plato.id, item.ingredientes.vegan)} color="red" />
     </View>
   )};
@@ -41,48 +44,69 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Menú</Text>
+      <Text style={styles.header}>Precio Total: ${Math.round(precioTotal)}</Text>
+      <Text style={styles.header}>Promedio de Health Score: {Math.round(promedioHealth)}</Text>
       <FlatList
         data={menu}
         key={(item) => item.id}
         renderItem={renderItem}
       />
-      {mostrarPlato && (
-        <Popup
-          visibilidad={mostrarPopup}
-          onClose={handleCerrarPopup}
-          plato={mostrarPlato}
-        />
-      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+   container: {
     flex: 1,
     padding: 20,
-  },
-
-  vegan: {
-    borderColor: "f00",
-    borderWidth:2,
-    borderRadius: 10,
-    backgroundColor: "f00"
+    backgroundColor: '#f4f4f9', // Fondo suave para mejorar la vista
   },
   header: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
     marginBottom: 20,
   },
+  subHeaderContainer: {
+    flexDirection: 'row', // Esto coloca los subtítulos en fila (horizontalmente)
+    justifyContent: 'space-between', // Distribuye el espacio entre los elementos
+    marginBottom: 10, // Espacio entre subtítulos y contenido
+  },
+  subHeader: {
+    fontSize: 16,
+    color: '#555',
+    flex: 1, // Hace que cada subtítulo ocupe el 50% del espacio
+    textAlign: 'center', // Alinea el texto al centro
+  },
   platoContainer: {
-    marginBottom: 15,
-    padding: 10,
+    marginBottom: 20,
+    padding: 15,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  vegan: {
+    borderColor: "#A8C686", // Color verde para los platos veganos
+    borderWidth: 2,
+    backgroundColor: "#A8C686", // Fondo verde para los platos veganos
   },
 });

@@ -1,14 +1,13 @@
 import { Image, StyleSheet, View, Button, Text, Modal } from 'react-native';
 import { MenuContext } from '@/contexts/MenuContext';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 export function Plato({plato, onDelete, mostrarPopup}){
 
     const { agregarAlMenu, menu } = useContext(MenuContext)
-
+  
     const agregar = (plato) => {
         agregarAlMenu(plato)
-
         onDelete(plato.id)
     }
 
@@ -20,14 +19,21 @@ export function Plato({plato, onDelete, mostrarPopup}){
         style={styles.image}
       />
       <View style={styles.buttonsContainer}>
-        <Button title="Ver Detalle"  onPress={() => mostrarPopup(plato)}/>
+        <Button title="Ver Detalle"  onPress={() => mostrarPopup(plato, menu)}/>
         <Button title="Agregar al menu"  onPress={() => agregar(plato)} color="green"/>
       </View>
     </View>
     )
 }
 
-export function Popup({ visibilidad, onClose, plato }){
+export function Popup({ visibilidad, onClose, plato, vegan,healthScore }){
+
+  const { verDetalle } = useContext(MenuContext)
+
+  useEffect(() => {
+    console.log(vegan, healthScore);
+  }, [vegan, healthScore])
+
     return (
       <Modal
         visible={visibilidad}
@@ -42,6 +48,9 @@ export function Popup({ visibilidad, onClose, plato }){
               source={{ uri: plato.image }}
               style={stylesPopup.image}
             />
+            <Text style={stylesPopup.title}>{vegan ? "Es vegano" : "No es vegano"}</Text>
+            <Text style={stylesPopup.title}>{healthScore}</Text>
+
             <Button title="Cerrar" onPress={onClose} />
           </View>
         </View>

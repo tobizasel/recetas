@@ -10,8 +10,13 @@ var menuNoVegano = 0
 export const MenuProvider = ({ children }) => {
   const [menu, setMenu] = useState([]);
 
-  const apiKey = "14a1dd4ac511492c96e50f1df6d6dc7e"
+  const apiKey = "ff61cf01f89f4dd287187194e40b99d9"
 
+  const verDetalle = async (id) => {
+    const response = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${apiKey}`)
+    return response.data
+  }
+  
   const agregarAlMenu = async (plato) => {
 
     const response = await axios.get(`https://api.spoonacular.com/recipes/${plato.id}/information?apiKey=${apiKey}`)
@@ -20,14 +25,17 @@ export const MenuProvider = ({ children }) => {
           menuVegano+=1
           console.log("ES VVEGANO", menuVegano);
           setMenu((menu) => [...menu, {plato: plato, ingredientes: response.data}]);
+          console.log(response.data.pricePerServing);
         } else if ((!response.data.vegan) && menuNoVegano < 2) {
           menuNoVegano+=1
           console.log("NO ES VVEGANO", menuNoVegano);
           setMenu((menu) => [...menu, {plato: plato, ingredientes: response.data}]);
-        } else if (menuNoVegano >= 2 || menuVegano >= 2) {
-            Alert.alert("Demasiadas cosas en el menu")
-        }
-
+        } else if (menuNoVegano >= 2) {
+            Alert.alert("Demasiadas cosas no veganas en el menu")
+        } else if (menuVegano >= 2) {
+          Alert.alert("Demasiadas cosas veganas en el menu")
+        }        
+      
   };
 
   const eliminarDelMenu = (id, vegano) => {
@@ -37,7 +45,7 @@ export const MenuProvider = ({ children }) => {
   };
 
   return (
-    <MenuContext.Provider value={{ menu, agregarAlMenu, eliminarDelMenu }}>
+    <MenuContext.Provider value={{ menu, agregarAlMenu, eliminarDelMenu, verDetalle }}>
       {children}
     </MenuContext.Provider>
   );

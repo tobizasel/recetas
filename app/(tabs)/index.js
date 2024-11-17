@@ -6,18 +6,24 @@ import { MenuContext } from '@/contexts/MenuContext';
 
 export default function HomeScreen() {
 
-  const apikey = "14a1dd4ac511492c96e50f1df6d6dc7e"
+  const apikey = "ff61cf01f89f4dd287187194e40b99d9"
   const [platos, setPlatos] = useState([]);
   const [mostrarPlato, setMostrarPlato] = useState(null)
   const [mostrarPopup, setMostrarPopup] = useState(false)
   const [busqueda, setBusqueda] = useState("")
+  const [healthScore, setHealthScore] = useState(0)
+  const [vegan, setVegan] = useState(false)
 
 
   const handleDelete = (id) => {
     setPlatos((platos) => platos.filter(plato => plato.id !== id));
   }
 
-  const handleMostrarPopup = (plato) => {
+  const handleMostrarPopup = async (plato) => {
+    const response = await axios.get(`https://api.spoonacular.com/recipes/${plato.id}/information?apiKey=${apikey}`)
+    console.log(response.data.healthScore);
+    setHealthScore(response.data.healthScore)
+    setVegan(response.data.vegan)
     setMostrarPlato(plato);
     setMostrarPopup(true);
   };
@@ -82,6 +88,8 @@ export default function HomeScreen() {
         visibilidad={mostrarPopup}
         onClose={handleCerrarPopup}
         plato={mostrarPlato}
+        vegan={vegan}
+        healthScore={healthScore}
       />
     )}
   </View>
@@ -90,11 +98,37 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f8f8f8', // Fondo suave
+    marginTop: 50, // Espacio superior para alejar de la parte superior de la pantalla
   },
   input: {
-    borderWidth: 2,
-    borderColor: "#c2c2c2",
-    width: 600
+    borderWidth: 1,
+    borderColor: '#c2c2c2', // Gris claro
+    borderRadius: 8, // Bordes redondeados
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 16,
+    marginBottom: 20,
+    backgroundColor: '#fff', // Fondo blanco para la caja de texto
+  },
+  flatList: {
+    flex: 1,
+    marginBottom: 20,
+    backgroundColor: "#fff" // Espacio entre los elementos y el borde inferior
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#333', // Color oscuro para el texto
+  },
+  noResultsText: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#777', // Gris suave para indicar que no hay resultados
   }
 });
